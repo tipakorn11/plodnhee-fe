@@ -2,3 +2,6 @@
 *.md
 *.env
 .next
+.vercel
+.env*
+!.env.example
