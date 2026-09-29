@@ -6,6 +6,16 @@ export type Person = {
   amount: number;
   bills: number;
   paid: boolean;
+  debts: DebtItem[];
+};
+
+export type DebtItem = {
+  id: string;
+  amount: number;
+  description?: string;
+  groupId?: string;
+  groupName?: string;
+  createdAt: string;
 };
 
 export type ExpenseGroup = {
@@ -15,4 +25,6 @@ export type ExpenseGroup = {
   date: string;
   total: number;
   people: string[];
+  lastAmount?: number;
+  favorite?: boolean;
 };

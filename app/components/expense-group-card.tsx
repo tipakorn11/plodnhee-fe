@@ -1,5 +1,5 @@
-import { Add, CalendarMonth, KeyboardArrowDown } from "@mui/icons-material";
-import { useState } from "react";
+import { Add, CalendarMonth, KeyboardArrowDown, Star, StarBorder } from "@mui/icons-material";
+import { useEffect, useState } from "react";
 import type { ExpenseGroup, Person } from "./dashboard-types";
 
 type ExpenseGroupCardProps = {
@@ -8,6 +8,7 @@ type ExpenseGroupCardProps = {
   selected: boolean;
   onSelect: () => void;
   onAddCharge: (group: ExpenseGroup, amountPerPerson: number) => void;
+  onToggleFavorite: () => void;
 };
 const money = (value: number) => `฿${value.toLocaleString("th-TH")}`;
 
@@ -17,8 +18,10 @@ export function ExpenseGroupCard({
   selected,
   onSelect,
   onAddCharge,
+  onToggleFavorite,
 }: ExpenseGroupCardProps) {
-  const [amountPerPerson, setAmountPerPerson] = useState("");
+  const [amountPerPerson, setAmountPerPerson] = useState(group.lastAmount?.toString() ?? "");
+  useEffect(() => { if (selected && group.lastAmount) setAmountPerPerson(group.lastAmount.toString()); }, [group.lastAmount, selected]);
   const members = people.filter((person) => group.people.includes(person.id));
   const paidCount = members.filter((person) => person.paid).length;
   const remaining = members
@@ -34,7 +37,7 @@ export function ExpenseGroupCard({
       className={`overflow-hidden rounded-[20px] border bg-white shadow-[0_3px_5px_#1929500b] ${selected ? "border-[#8aa9f7] ring-3 ring-[#3863df]/[.07]" : "border-[#e2e8f1]"}`}
     >
       <button
-        className="flex w-full justify-between gap-5 bg-white p-[18px] text-left text-inherit hover:bg-[#f8faff] md:p-[25px]"
+        className="relative flex w-full justify-between gap-5 bg-white p-[18px] text-left text-inherit hover:bg-[#f8faff] md:p-[25px]"
         type="button"
         onClick={onSelect}
         aria-expanded={selected}
@@ -72,6 +75,16 @@ export function ExpenseGroupCard({
           </small>
           <KeyboardArrowDown className="absolute right-[-2px] top-[22px] text-[#93a1b7]" />
         </div>
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label="ตั้งเป็นกรุ๊ปโปรด"
+          className="absolute right-5 top-3 cursor-pointer text-[#e6a62d]"
+          onClick={(event) => { event.stopPropagation(); onToggleFavorite(); }}
+          onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); onToggleFavorite(); } }}
+        >
+          {group.favorite ? <Star /> : <StarBorder />}
+        </span>
       </button>
       {selected && (
         <form
@@ -82,7 +95,7 @@ export function ExpenseGroupCard({
             <b>เพิ่มยอดให้ทั้งกรุ๊ป</b>
             <small className="font-medium text-[#71809a]">
               สมาชิก {members.length} คนจะถูกเพิ่มยอดเท่ากัน
-              ส่วนลดยังทำเป็นรายคน
+              · ราคาเดิม {group.lastAmount ? money(group.lastAmount) : "ยังไม่มี"}
             </small>
           </div>
           <label className="grid gap-1 text-sm font-bold text-[#536279]">

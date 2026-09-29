@@ -9,6 +9,7 @@ export const initialPeople: Person[] = [
     amount: 1200,
     bills: 3,
     paid: false,
+    debts: [],
   },
   {
     id: "2",
@@ -18,6 +19,7 @@ export const initialPeople: Person[] = [
     amount: 1850,
     bills: 4,
     paid: false,
+    debts: [],
   },
   {
     id: "3",
@@ -27,6 +29,7 @@ export const initialPeople: Person[] = [
     amount: 550,
     bills: 2,
     paid: false,
+    debts: [],
   },
   {
     id: "4",
@@ -36,6 +39,7 @@ export const initialPeople: Person[] = [
     amount: 0,
     bills: 2,
     paid: true,
+    debts: [],
   },
 ];
 
