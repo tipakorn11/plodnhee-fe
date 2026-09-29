@@ -27,4 +27,5 @@ export type ExpenseGroup = {
   people: string[];
   lastAmount?: number;
   favorite?: boolean;
+  memberOwed: Record<string, number>;
 };

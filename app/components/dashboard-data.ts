@@ -51,6 +51,7 @@ export const initialGroups: ExpenseGroup[] = [
     date: "2026-09-20",
     total: 1400,
     people: ["1", "2", "3", "4"],
+    memberOwed: {},
   },
   {
     id: "2",
@@ -59,6 +60,7 @@ export const initialGroups: ExpenseGroup[] = [
     date: "2026-09-12",
     total: 4800,
     people: ["1", "2", "3"],
+    memberOwed: {},
   },
   {
     id: "3",
@@ -67,5 +69,6 @@ export const initialGroups: ExpenseGroup[] = [
     date: "2026-09-03",
     total: 900,
     people: ["1", "4"],
+    memberOwed: {},
   },
 ];

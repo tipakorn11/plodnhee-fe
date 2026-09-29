@@ -25,10 +25,8 @@ export function ExpenseGroupCard({
   const [amountPerPerson, setAmountPerPerson] = useState(group.lastAmount?.toString() ?? "");
   useEffect(() => { if (selected && group.lastAmount) setAmountPerPerson(group.lastAmount.toString()); }, [group.lastAmount, selected]);
   const members = people.filter((person) => group.people.includes(person.id));
-  const paidCount = members.filter((person) => person.paid).length;
-  const remaining = members
-    .filter((person) => !person.paid)
-    .reduce((sum, person) => sum + person.amount, 0);
+  const paidCount = members.filter((person) => (group.memberOwed[person.id] ?? 0) <= 0).length;
+  const remaining = members.reduce((sum, person) => sum + (group.memberOwed[person.id] ?? 0), 0);
   function submitGroupCharge(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     onAddCharge(group, Number(amountPerPerson));
@@ -96,15 +94,15 @@ export function ExpenseGroupCard({
           <div className="grid flex-1 gap-0.5">
             <b>เพิ่มยอดให้ทั้งกรุ๊ป</b>
             <small className="font-medium text-[#71809a]">
-              สมาชิก {members.length} คนจะถูกเพิ่มยอดเท่ากัน
-              · ราคาเดิม {group.lastAmount ? money(group.lastAmount) : "ยังไม่มี"}
+              สมาชิก {members.length} คนจะถูกหารยอดรวมเท่ากัน
+              · ยอดรวมเดิม {group.lastAmount ? money(group.lastAmount) : "ยังไม่มี"}
             </small>
           </div>
           <label className="grid gap-1 text-sm font-bold text-[#536279]">
-            ยอดเพิ่ม/คน
+            ยอดรวมทั้งกรุ๊ป
             <input
               className="w-full rounded-[9px] border border-[#cad5e6] px-2.5 py-2 outline-[#3863df] sm:w-[130px]"
-              aria-label="ยอดเพิ่มต่อคน"
+              aria-label="ยอดรวมทั้งกรุ๊ป"
               type="number"
               min="1"
               step="1"
@@ -147,13 +145,13 @@ export function ExpenseGroupCard({
                 </em>
               </b>
               <small className="font-semibold text-[#8492a7]">
-                ยอดหาร: {money(Math.round(group.total / members.length))}
+                ยอดค้างในกรุ๊ป: {money(group.memberOwed[person.id] ?? 0)}
               </small>
             </div>
             <span
-              className={`ml-auto rounded-[15px] px-2 py-1.5 text-[13px] font-bold md:px-[14px] md:py-2 ${person.paid ? "border border-[#93e7bd] bg-[#e0fae9] text-[#398d6b]" : "border border-[#ffc4cb] bg-[#fff2f3] text-[#e44f63]"}`}
+              className={`ml-auto rounded-[15px] px-2 py-1.5 text-[13px] font-bold md:px-[14px] md:py-2 ${(group.memberOwed[person.id] ?? 0) <= 0 ? "border border-[#93e7bd] bg-[#e0fae9] text-[#398d6b]" : "border border-[#ffc4cb] bg-[#fff2f3] text-[#e44f63]"}`}
             >
-              {person.paid ? "✓ จ่ายแล้ว" : "⊗ ยังไม่จ่าย"}
+              {(group.memberOwed[person.id] ?? 0) <= 0 ? "✓ จ่ายแล้ว" : "⊗ ยังไม่จ่าย"}
             </span>
           </div>
         ))}

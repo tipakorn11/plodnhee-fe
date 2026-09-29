@@ -58,8 +58,8 @@ export const debtApi = {
   groups: (token: string) => request<ApiGroup[]>("/groups", {}, token),
   createPerson: (token: string, name: string) =>
     request<ApiPerson>("/people", { method: "POST", body: JSON.stringify({ name }) }, token),
-  createCharge: (token: string, groupId: string, amountPerPerson: number) =>
-    request(`/expense-groups/${groupId}/charges`, { method: "POST", body: JSON.stringify({ amountPerPerson }) }, token),
+  createCharge: (token: string, groupId: string, totalAmount: number) =>
+    request(`/expense-groups/${groupId}/charges`, { method: "POST", body: JSON.stringify({ totalAmount }) }, token),
   createGroup: (token: string, name: string, memberIds: string[]) =>
     request<ApiGroup>("/groups", { method: "POST", body: JSON.stringify({ name, memberIds }) }, token),
   createPersonalBill: (token: string, personId: string, amount: number, description?: string) =>
