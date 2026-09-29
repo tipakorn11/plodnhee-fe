@@ -9,6 +9,7 @@ type ExpenseGroupCardProps = {
   onSelect: () => void;
   onAddCharge: (group: ExpenseGroup, amountPerPerson: number) => void;
   onToggleFavorite: () => void;
+  isAddingCharge?: boolean;
 };
 const money = (value: number) => `฿${value.toLocaleString("th-TH")}`;
 
@@ -19,6 +20,7 @@ export function ExpenseGroupCard({
   onSelect,
   onAddCharge,
   onToggleFavorite,
+  isAddingCharge = false,
 }: ExpenseGroupCardProps) {
   const [amountPerPerson, setAmountPerPerson] = useState(group.lastAmount?.toString() ?? "");
   useEffect(() => { if (selected && group.lastAmount) setAmountPerPerson(group.lastAmount.toString()); }, [group.lastAmount, selected]);
@@ -109,14 +111,16 @@ export function ExpenseGroupCard({
               required
               value={amountPerPerson}
               onChange={(event) => setAmountPerPerson(event.target.value)}
+              disabled={isAddingCharge}
               placeholder="เช่น 100"
             />
           </label>
           <button
             className="inline-flex items-center justify-center gap-2 rounded-[13px] bg-[#3863df] px-[15px] py-2.5 font-bold text-white shadow-[0_3px_6px_#3863df30]"
             type="submit"
+            disabled={isAddingCharge}
           >
-            <Add /> เพิ่มยอด
+            {isAddingCharge ? <><span className="button-spinner" /> กำลังเพิ่ม...</> : <><Add /> เพิ่มยอด</>}
           </button>
         </form>
       )}

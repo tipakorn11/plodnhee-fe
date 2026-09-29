@@ -7,3 +7,26 @@
 
 html, body { min-height: 100%; }
 body { background: #f7f9fc; color: #172239; }
+
+button {
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease, background-color 150ms ease, border-color 150ms ease, color 150ms ease, opacity 150ms ease;
+}
+button:not(:disabled):hover { transform: translateY(-1px); }
+button:not(:disabled):hover { filter: brightness(.97); box-shadow: 0 5px 14px rgb(23 34 57 / .12); }
+button:not(:disabled):active { transform: translateY(0) scale(.97); }
+button:focus-visible { outline: 3px solid rgb(56 99 223 / .32); outline-offset: 2px; }
+button:disabled { cursor: wait; opacity: .62; }
+.button-spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  animation: button-spin .65s linear infinite;
+}
+@keyframes button-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
