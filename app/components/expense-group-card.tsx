@@ -1,5 +1,6 @@
 import { Add, CalendarMonth, KeyboardArrowDown, Star, StarBorder } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
 import type { ExpenseGroup, Person } from "./dashboard-types";
 
 type ExpenseGroupCardProps = {
@@ -12,6 +13,7 @@ type ExpenseGroupCardProps = {
   isAddingCharge?: boolean;
 };
 const money = (value: number) => `฿${value.toLocaleString("th-TH")}`;
+type ChargeFormValues = { amount: number };
 
 export function ExpenseGroupCard({
   group,
@@ -22,15 +24,14 @@ export function ExpenseGroupCard({
   onToggleFavorite,
   isAddingCharge = false,
 }: ExpenseGroupCardProps) {
-  const [amountPerPerson, setAmountPerPerson] = useState(group.lastAmount?.toString() ?? "");
-  useEffect(() => { if (selected && group.lastAmount) setAmountPerPerson(group.lastAmount.toString()); }, [group.lastAmount, selected]);
+  const chargeForm = useForm<ChargeFormValues>({ defaultValues: { amount: group.lastAmount } });
+  useEffect(() => { if (selected && group.lastAmount) chargeForm.setValue("amount", group.lastAmount); }, [chargeForm, group.lastAmount, selected]);
   const members = people.filter((person) => group.people.includes(person.id));
   const paidCount = members.filter((person) => (group.memberOwed[person.id] ?? 0) <= 0).length;
   const remaining = members.reduce((sum, person) => sum + (group.memberOwed[person.id] ?? 0), 0);
-  function submitGroupCharge(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    onAddCharge(group, Number(amountPerPerson));
-    setAmountPerPerson("");
+  function submitGroupCharge({ amount }: ChargeFormValues) {
+    onAddCharge(group, amount);
+    chargeForm.reset({ amount: undefined });
   }
   return (
     <article
@@ -89,7 +90,8 @@ export function ExpenseGroupCard({
       {selected && (
         <form
           className="flex flex-col items-stretch gap-3 border-t border-[#e2e8f1] bg-[#f7f9ff] p-4 sm:flex-row sm:items-end sm:gap-[15px] md:px-[25px]"
-          onSubmit={submitGroupCharge}
+          onSubmit={chargeForm.handleSubmit(submitGroupCharge)}
+          noValidate
         >
           <div className="grid flex-1 gap-0.5">
             <b>เพิ่มยอดให้ทั้งกรุ๊ป</b>
@@ -106,13 +108,12 @@ export function ExpenseGroupCard({
               type="number"
               min="1"
               step="1"
-              required
-              value={amountPerPerson}
-              onChange={(event) => setAmountPerPerson(event.target.value)}
               disabled={isAddingCharge}
               placeholder="เช่น 100"
+              {...chargeForm.register("amount", { valueAsNumber: true, required: "กรุณากรอกยอดรวม", min: { value: 1, message: "ยอดรวมต้องมากกว่า 0" } })}
             />
           </label>
+          {chargeForm.formState.errors.amount && <p className="m-0 text-sm font-semibold text-[#d9344e]">{chargeForm.formState.errors.amount.message}</p>}
           <button
             className="inline-flex items-center justify-center gap-2 rounded-[13px] bg-[#3863df] px-[15px] py-2.5 font-bold text-white shadow-[0_3px_6px_#3863df30]"
             type="submit"
