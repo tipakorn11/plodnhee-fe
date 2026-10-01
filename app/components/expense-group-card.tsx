@@ -1,4 +1,4 @@
-import { Add, CalendarMonth, KeyboardArrowDown, Star, StarBorder } from "@mui/icons-material";
+import { Add, CalendarMonth, DeleteOutline, KeyboardArrowDown, Star, StarBorder } from "@mui/icons-material";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import type { ExpenseGroup, Person } from "./dashboard-types";
@@ -10,7 +10,10 @@ type ExpenseGroupCardProps = {
   onSelect: () => void;
   onAddCharge: (group: ExpenseGroup, amountPerPerson: number) => void;
   onToggleFavorite: () => void;
+  onDelete: (group: ExpenseGroup) => void;
+  onPayMember: (person: Person) => void;
   isAddingCharge?: boolean;
+  isDeleting?: boolean;
 };
 const money = (value: number) => `฿${value.toLocaleString("th-TH")}`;
 type ChargeFormValues = { amount: number };
@@ -22,7 +25,10 @@ export function ExpenseGroupCard({
   onSelect,
   onAddCharge,
   onToggleFavorite,
+  onDelete,
+  onPayMember,
   isAddingCharge = false,
+  isDeleting = false,
 }: ExpenseGroupCardProps) {
   const chargeForm = useForm<ChargeFormValues>({ defaultValues: { amount: group.lastAmount } });
   useEffect(() => { if (selected && group.lastAmount) chargeForm.setValue("amount", group.lastAmount); }, [chargeForm, group.lastAmount, selected]);
@@ -124,10 +130,15 @@ export function ExpenseGroupCard({
         </form>
       )}
       <div className="border-t border-[#e2e8f1] p-4 md:px-[25px] md:pb-6 md:pt-5">
-        <div className="flex items-center justify-between border-b border-[#edf0f5] pb-2 font-bold text-[#75839a]">
+        <div className="flex items-center justify-between gap-3 border-b border-[#edf0f5] pb-2 font-bold text-[#75839a]">
           <span>รายชื่อผู้หาร ({members.length} คน)</span>
-          <button className="border-0 bg-transparent font-bold text-[#4a80f1]">
-            แก้ไขกลุ่ม
+          <button
+            className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm font-bold text-[#d9344e] hover:bg-[#fff2f3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d9344e]"
+            type="button"
+            disabled={isDeleting}
+            onClick={() => onDelete(group)}
+          >
+            <DeleteOutline fontSize="small" /> {isDeleting ? "กำลังลบ..." : "ลบกรุ๊ป"}
           </button>
         </div>
         {members.map((person) => (
@@ -154,6 +165,7 @@ export function ExpenseGroupCard({
             >
               {(group.memberOwed[person.id] ?? 0) <= 0 ? "✓ จ่ายแล้ว" : "⊗ ยังไม่จ่าย"}
             </span>
+            {(group.memberOwed[person.id] ?? 0) > 0 && <button className="rounded-lg border border-[#3863df] px-2 py-1.5 text-sm font-bold text-[#3863df]" type="button" onClick={() => onPayMember(person)}>ชำระหนี้</button>}
           </div>
         ))}
       </div>

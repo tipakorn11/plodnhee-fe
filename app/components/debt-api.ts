@@ -62,10 +62,12 @@ export const debtApi = {
     request(`/expense-groups/${groupId}/charges`, { method: "POST", body: JSON.stringify({ totalAmount }) }, token),
   createGroup: (token: string, name: string, memberIds: string[]) =>
     request<ApiGroup>("/groups", { method: "POST", body: JSON.stringify({ name, memberIds }) }, token),
+  deleteGroup: (token: string, groupId: string) =>
+    request<void>(`/groups/${groupId}`, { method: "DELETE" }, token),
   createPersonalBill: (token: string, personId: string, amount: number, description?: string) =>
     request<ApiBill>(`/people/${personId}/bills`, { method: "POST", body: JSON.stringify({ amount, description }) }, token),
-  payGroupBills: (token: string, groupId: string, personId: string, scope: "one" | "all", billId?: string) =>
-    request(`/groups/${groupId}/members/${personId}/payments`, { method: "POST", body: JSON.stringify({ scope, billId }) }, token),
-  payPersonalBills: (token: string, personId: string, scope: "one" | "all", billId?: string) =>
-    request(`/people/${personId}/bills/payments`, { method: "POST", body: JSON.stringify({ scope, billId }) }, token),
+  payGroupBills: (token: string, groupId: string, personId: string, scope: "one" | "all", billId?: string, amount?: number) =>
+    request(`/groups/${groupId}/members/${personId}/payments`, { method: "POST", body: JSON.stringify({ scope, billId, amount }) }, token),
+  payPersonalBills: (token: string, personId: string, scope: "one" | "all", billId?: string, amount?: number) =>
+    request(`/people/${personId}/bills/payments`, { method: "POST", body: JSON.stringify({ scope, billId, amount }) }, token),
 };
